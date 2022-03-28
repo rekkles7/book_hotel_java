@@ -40,6 +40,7 @@ public class AdminRoomController {
     public String uploadImg(@RequestParam("files") MultipartFile file) throws IllegalStateException, IOException {
         CosUtils client = new CosUtils();
         String url = client.uploadFile(file);
+        System.out.println(111);
         System.out.println(file.getOriginalFilename() + "图片已传入!!");
         return url;
     }
