@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.bs_hotel.mapper.OrderMapper">
+
+    <select id="selectAllOrderByUserId" resultType="com.ctgu.bs_hotel.entity.vo.OrderVo">
+        select `hotel`.hotel_name,`room`.room_name,`room`.room_img_url,`room`.room_service,
+               `order`.start_of_date,`order`.end_of_date,`order`.order_status,`order`.order_id,`order`.order_price,
+               `order`.order_user_name,`order`.order_user_telephone,`order`.order_user_ps,
+               `order`.order_room_number,`order`.order_create_time,`order`.order_pay_time
+        from `order`,`hotel`,`room`
+        where `order`.open_id = #{userId} and `order`.hotel_id = `hotel`.hotel_id and `order`.room_id = `room`.room_id
+    </select>
+
+    <select id="selectToPayOrderByUserIdAndSelectedIndex" resultType="com.ctgu.bs_hotel.entity.Order">
+        select * from `order` where `order`.open_id = #{userId} and `order`.order_status = #{selectedIndex}
+    </select>
+
+</mapper>

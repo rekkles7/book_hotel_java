@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.bs_hotel.mapper.RoomMapper">
+
+    <select id="findRoomByDate" resultType="com.ctgu.bs_hotel.entity.Order">
+        select `order`.room_id,`order`.start_of_date,`order`.end_of_date from `order`
+        where `order`.hotel_id = #{hotelId}
+        and (`order`.order_status = 1 or `order`.order_status = 0)
+    </select>
+    
+</mapper>
