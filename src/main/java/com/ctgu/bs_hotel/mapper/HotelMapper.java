@@ -12,4 +12,5 @@ import com.ctgu.bs_hotel.entity.Hotel;
  */
 public interface HotelMapper extends BaseMapper<Hotel> {
 
+    void setMinPrice(int hotelId,int minPrice);
 }

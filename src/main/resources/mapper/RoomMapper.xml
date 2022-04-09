@@ -3,9 +3,12 @@
 <mapper namespace="com.ctgu.bs_hotel.mapper.RoomMapper">
 
     <select id="findRoomByDate" resultType="com.ctgu.bs_hotel.entity.Order">
-        select `order`.room_id,`order`.start_of_date,`order`.end_of_date from `order`
+        select `order`.room_id,`order`.start_of_date,`order`.end_of_date,`order`.order_room_number from `order`
         where `order`.hotel_id = #{hotelId}
-        and (`order`.order_status = 1 or `order`.order_status = 0)
+        and (`order`.order_status = 0 or `order`.order_status = 1 or `order`.order_status = 2 or `order`.order_status = 3)
     </select>
-    
+
+    <select id="findMinPrice" resultType="int">
+        select min(`room`.room_price) from room where room.`hotel_id` = #{hotelId}
+    </select>
 </mapper>

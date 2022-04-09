@@ -2,18 +2,16 @@ package com.ctgu.bs_hotel.entity.vo;
 
 import lombok.Data;
 
-import java.util.Date;
-
 /**
- * ClassName orderDTO
+ * ClassName OrderMetaVo
  * Description
  * Create by luochuang
- * Date 2022/3/9 2:14 下午
+ * Date 2022/4/3 10:27 上午
  */
 @Data
-public class OrderVo {
+public class OrderMetaVo {
 
-    private int orderId;
+    private String openId;
 
     private String orderUserName;
 
@@ -23,18 +21,13 @@ public class OrderVo {
 
     private String endOfDate;
 
+    private String hotelId;
+
+    private String roomId;
+
     private int orderPrice;
 
     private String orderUserPs;
 
-    private String roomName;
-
     private int orderRoomNumber;
-
-    private int orderStatus;
-
-    private String orderCreateTime;
-
-    private String orderPayTime;
-
 }

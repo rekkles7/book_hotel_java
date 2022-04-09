@@ -32,18 +32,34 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
 
     @Override
     public List<Room> findRoomByDate(String startOfDate, String endOfDate, int hotelId) throws ParseException {
+        //sod eod 分别为用户指定的起始时间和结束时间
         Date sod = DateUtil.string2Date(startOfDate + " 13:00:00");
-        Date eod = DateUtil.string2Date(endOfDate + " 13:00:00");
+        Date eod = DateUtil.string2Date(endOfDate + " 12:00:00");
+        //查出该酒店所有的订单信息
         List<Order> orderList= roomMapper.findRoomByDate(hotelId);
         QueryWrapper wrapper = new QueryWrapper();
         wrapper.eq("hotel_id",hotelId);
+        //查出该酒店所有的房型
         List<Room> roomList = roomMapper.selectList(wrapper);
+        //遍历订单
         for (Order order : orderList) {
+            //判断两个日期之间是否有交集
             if (DateUtil.isCross(sod,eod,order.getStartOfDate(),order.getEndOfDate())){
-                int nowNumber = roomList.get(order.getRoomId()-1).getRoomNumber();
-                roomList.get(order.getRoomId()-1).setRoomNumber(nowNumber-1);
+                //如果有的话，havabooked为当前订单的房间总数
+                int havaBooked = order.getOrderRoomNumber();
+                //找出order的房型id，然后拿房型的number减去havabooked
+                for (Room room : roomList) {
+                    if(order.getRoomId() == room.getRoomId()){
+                        room.setRoomNumber(room.getRoomNumber()-havaBooked);
+                    }
+                }
             }
         }
         return roomList;
+    }
+
+    @Override
+    public int findMinPrice(int hotelId) {
+        return roomMapper.findMinPrice(hotelId);
     }
 }

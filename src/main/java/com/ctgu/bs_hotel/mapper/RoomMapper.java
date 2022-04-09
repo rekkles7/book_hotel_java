@@ -16,4 +16,6 @@ import java.util.List;
 public interface RoomMapper extends BaseMapper<Room> {
 
     List<Order> findRoomByDate(@Param("hotelId") int hotelId);
+
+    int findMinPrice(int hotelId);
 }

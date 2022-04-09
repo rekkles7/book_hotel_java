@@ -3,8 +3,10 @@ package com.ctgu.bs_hotel.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ctgu.bs_hotel.entity.vo.OrderVo;
 import com.ctgu.bs_hotel.entity.Order;
+import com.ctgu.bs_hotel.entity.vo.UserCenterOrderVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,8 +17,21 @@ import java.util.List;
  */
 public interface OrderMapper extends BaseMapper<Order> {
 
-    List<OrderVo> selectAllOrderByUserId(@Param("userId") String userId);
+    List<UserCenterOrderVo> selectAllOrderByUserId(@Param("userId") String userId);
 
-    List<Order> selectToPayOrderByUserIdAndSelectedIndex(@Param("userId") String userId,@Param("selectedIndex")int selectedIndex);
+    List<UserCenterOrderVo> selectToPayOrderByUserIdAndSelectedIndex(@Param("userId") String userId,@Param("selectedIndex")int selectedIndex);
 
+    List<OrderVo> selectAllOrderByHotelId(Long hotelId);
+
+    int updateOrderNameAndTelphone(int orderId, String orderUserName, String orderUserTelephone,int orderStatus);
+
+    int confirmOrder(Long id);
+
+    int cancelOrder(Long id);
+
+    boolean saveOrder(Order createOrder);
+
+    Order selectOrderById(int orderId);
+
+    int toPayOrder(int orderId, Date date);
 }

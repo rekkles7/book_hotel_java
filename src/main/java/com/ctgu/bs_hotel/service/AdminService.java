@@ -26,4 +26,6 @@ public interface AdminService {
     void delete(Set<Long> ids);
 
     Admin selectHotelIdByAdminId(int adminId);
+
+    Admin resetPassword(Long id);
 }

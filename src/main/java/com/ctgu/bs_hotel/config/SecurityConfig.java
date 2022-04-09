@@ -33,6 +33,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/auth/login").permitAll()
                 .antMatchers("/auth/code").permitAll()
                 .antMatchers("/user/hotel/*").permitAll()
+                .antMatchers("/user/room/*").permitAll()
+                .antMatchers("/user/order/*").permitAll()
+                .antMatchers("/user/wx/*").permitAll()
+                .antMatchers("/user/*").permitAll()
                 // 放行OPTIONS请求，放行了才能把status放到data里面
                 .antMatchers(HttpMethod.OPTIONS, "/*").permitAll()
                 .anyRequest().authenticated()

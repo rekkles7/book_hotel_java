@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -109,6 +110,11 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Admin selectHotelIdByAdminId(int adminId) {
         return adminRepository.selectHotelIdByAdminId(adminId);
+    }
+
+    @Override
+    public Admin resetPassword(Long id) {
+        return adminRepository.resetPassword(id);
     }
 
 }

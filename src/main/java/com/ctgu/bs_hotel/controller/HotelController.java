@@ -29,7 +29,6 @@ public class HotelController {
 
     @GetMapping("/hotel/selectAllHotel")
     public GlobalResult selectAllHotel(){
-        System.out.println("请求数据");
         List<Hotel> hotelList = new ArrayList<>();
         hotelList = hotelService.list();
         if (hotelList == null){

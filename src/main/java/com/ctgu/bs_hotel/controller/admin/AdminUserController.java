@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,17 @@ public class AdminUserController {
 //            }
 //        }
         adminService.delete(ids);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ApiOperation("重置密码")
+    @DeleteMapping("resetPassword")
+    public ResponseEntity<Object> resetPassword(@RequestBody List<Long> ids) throws Exception {
+        for (Long id : ids) {
+            Admin admin = adminService.resetPassword(id);
+            admin.setPassword(passwordEncoder.encode("123456"));
+            adminService.update(admin);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

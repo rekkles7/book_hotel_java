@@ -15,4 +15,6 @@ import java.util.List;
  */
 public interface RoomService extends IService<Room> {
     List<Room> findRoomByDate(String startOfDate, String endOfDate, int hotelId) throws ParseException;
+
+    int findMinPrice(int hotelId);
 }

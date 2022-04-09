@@ -12,6 +12,7 @@ import com.wf.captcha.base.Captcha;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -40,6 +41,7 @@ public class AdminAuthorizationController {
 
     @GetMapping(value = "/code")
     public ResponseEntity<Object> getCode() {
+        System.out.println(1111);
         // 获取运算的结果
         Captcha captcha = new ArithmeticCaptcha(111, 36);
         captcha.setLen(2);
@@ -91,6 +93,12 @@ public class AdminAuthorizationController {
     public ResponseEntity<Object> getUserInfo() {
 
         return ResponseEntity.ok(SecurityUtils.getCurrentUser());
+    }
+
+    @ApiOperation("退出登录")
+    @DeleteMapping(value = "/logout")
+    public ResponseEntity<Object> logout(HttpServletRequest request) {
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

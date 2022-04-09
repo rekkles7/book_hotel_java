@@ -33,7 +33,6 @@ public class AdminHotelController {
 
     @PostMapping("/upload")
     public String uploadImg(@RequestParam("files") MultipartFile file) throws IllegalStateException, IOException {
-        System.out.println(1111);
         CosUtils client = new CosUtils();
         String url = client.uploadFile(file);
         System.out.println(file.getOriginalFilename() + "图片已传入!!");

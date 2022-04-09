@@ -6,6 +6,7 @@ import com.ctgu.bs_hotel.common.GlobalResult;
 import com.ctgu.bs_hotel.entity.Admin;
 import com.ctgu.bs_hotel.entity.Room;
 import com.ctgu.bs_hotel.service.AdminService;
+import com.ctgu.bs_hotel.service.HotelService;
 import com.ctgu.bs_hotel.service.RoomService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,11 +37,13 @@ public class AdminRoomController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private HotelService hotelService;
+
     @PostMapping("/upload")
     public String uploadImg(@RequestParam("files") MultipartFile file) throws IllegalStateException, IOException {
         CosUtils client = new CosUtils();
         String url = client.uploadFile(file);
-        System.out.println(111);
         System.out.println(file.getOriginalFilename() + "图片已传入!!");
         return url;
     }
@@ -65,6 +68,11 @@ public class AdminRoomController {
     @ApiOperation("新增房型")
     @PostMapping
     public ResponseEntity<Object> createRoom(@Validated @RequestBody Room resources){
+        int minPrice = roomService.findMinPrice(resources.getHotelId());
+        if (minPrice > resources.getRoomPrice()){
+            minPrice = resources.getRoomPrice();
+            hotelService.setMinPrice(resources.getHotelId(),minPrice);
+        }
         roomService.save(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -72,6 +80,11 @@ public class AdminRoomController {
     @ApiOperation("修改房型")
     @PutMapping
     public ResponseEntity<Object> updateRoom(@RequestBody Room resources) throws Exception {
+        int minPrice = roomService.findMinPrice(resources.getHotelId());
+        if (minPrice > resources.getRoomPrice()){
+            minPrice = resources.getRoomPrice();
+            hotelService.setMinPrice(resources.getHotelId(),minPrice);
+        }
         QueryWrapper<Room> wrapper = new QueryWrapper<>();
         wrapper.eq("room_id",resources.getRoomId());
         roomService.update(resources, wrapper);
@@ -81,10 +94,14 @@ public class AdminRoomController {
     @ApiOperation("删除房型")
     @DeleteMapping
     public ResponseEntity<Object> deleteRoom(@RequestBody Set<Long> ids){
+        Room room = null;
         for (Long id : ids) {
-            System.out.println(id);
+            room = roomService.getById(id);
+            break;
         }
         roomService.removeByIds(ids);
+        int minPrice = roomService.findMinPrice(room.getHotelId());
+        hotelService.setMinPrice(room.getHotelId(),minPrice);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

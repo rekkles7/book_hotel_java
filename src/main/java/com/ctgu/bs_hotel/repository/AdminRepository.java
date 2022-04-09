@@ -25,4 +25,9 @@ public interface AdminRepository extends JpaRepository<Admin, Long>, JpaSpecific
     @Query(value = "SELECT m.* FROM sys_user m WHERE " +
             "m.user_id = ?1",nativeQuery = true)
     Admin selectHotelIdByAdminId(int adminId);
+
+    @Query(value = "SELECT m.* FROM sys_user m WHERE " +
+            "m.user_id = ?1",nativeQuery = true)
+    Admin resetPassword(Long adminId);
+
 }

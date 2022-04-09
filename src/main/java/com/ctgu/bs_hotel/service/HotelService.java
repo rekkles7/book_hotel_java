@@ -10,4 +10,5 @@ import com.ctgu.bs_hotel.entity.Hotel;
  * Date 2022/3/2 4:27 下午
  */
 public interface HotelService extends IService<Hotel> {
+    void setMinPrice(int hotelId,int minPrice);
 }
