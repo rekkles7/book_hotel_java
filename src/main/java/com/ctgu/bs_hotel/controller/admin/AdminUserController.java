@@ -4,18 +4,16 @@ import com.ctgu.bs_hotel.entity.Admin;
 import com.ctgu.bs_hotel.service.AdminService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * ClassName AdminUserController
@@ -34,13 +32,38 @@ public class AdminUserController {
     @ApiOperation("查询用户")
     @GetMapping
     public ResponseEntity<Object> queryUser(Pageable pageable) {
+        System.out.println(pageable);
         return new ResponseEntity<>(adminService.queryAll(pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation("查询用户")
+    @GetMapping("selectUser")
+    public ResponseEntity<Object> selectUser(@RequestParam(value = "userName")String userName,
+                                             @RequestParam("pageSize") int pageSize,
+                                             @RequestParam("pageIndex") int pageIndex) {
+        Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
+        Map<String,Object> objectMap = new HashMap<>();
+        if (userName == null||"".equals(userName)){
+            Object userList = adminService.queryAll(pageable);
+            int length = adminService.findLength();
+            objectMap.put("length",length);
+            objectMap.put("userList",userList);
+            return new ResponseEntity<>(objectMap, HttpStatus.OK);
+        }else{
+            Page<Admin> userList = adminService.findAdmin(userName,pageable);
+            long length = userList.getTotalElements();
+            System.out.println(length);
+            objectMap.put("length",length);
+            objectMap.put("userList",userList);
+            return new ResponseEntity<>(objectMap, HttpStatus.OK);
+        }
     }
 
     @ApiOperation("新增用户")
     @PostMapping
     public ResponseEntity<Object> createUser(@Validated @RequestBody Admin resources){
         // 默认密码 123456
+        System.out.println(resources);
         resources.setPassword(passwordEncoder.encode("123456"));
         adminService.create(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);

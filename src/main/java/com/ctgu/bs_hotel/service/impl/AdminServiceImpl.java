@@ -11,9 +11,11 @@ import com.ctgu.bs_hotel.service.mapstruct.AdminMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -91,6 +93,7 @@ public class AdminServiceImpl implements AdminService {
         user.setPhone(resources.getPhone());
         user.setNickName(resources.getNickName());
         user.setGender(resources.getGender());
+        user.setHotelId(resources.getHotelId());
         adminRepository.save(user);
 //        // 清除缓存
 //        delCaches(user.getId(), user.getUsername());
@@ -116,5 +119,21 @@ public class AdminServiceImpl implements AdminService {
     public Admin resetPassword(Long id) {
         return adminRepository.resetPassword(id);
     }
+
+    @Override
+    public Page<Admin> findAdmin(String userName, Pageable pageable) {
+        return adminRepository.findAdmin(userName,pageable);
+    }
+
+    @Override
+    public int findLength() {
+        return adminRepository.findAll().size();
+    }
+
+    @Override
+    public List<String> findNameByHotelId(String hotelId) {
+        return adminRepository.findNameByHotelId(hotelId);
+    }
+
 
 }

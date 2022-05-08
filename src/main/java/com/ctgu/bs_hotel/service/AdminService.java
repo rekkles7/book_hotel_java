@@ -2,9 +2,11 @@ package com.ctgu.bs_hotel.service;
 
 import com.ctgu.bs_hotel.entity.Admin;
 import com.ctgu.bs_hotel.service.dto.AdminDto;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,4 +30,10 @@ public interface AdminService {
     Admin selectHotelIdByAdminId(int adminId);
 
     Admin resetPassword(Long id);
+
+    Page<Admin> findAdmin(String userName, Pageable pageable);
+
+    int findLength();
+
+    List<String> findNameByHotelId(String hotelId);
 }

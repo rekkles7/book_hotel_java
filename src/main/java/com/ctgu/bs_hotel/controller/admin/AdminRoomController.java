@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.management.Query;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -68,10 +69,17 @@ public class AdminRoomController {
     @ApiOperation("新增房型")
     @PostMapping
     public ResponseEntity<Object> createRoom(@Validated @RequestBody Room resources){
-        int minPrice = roomService.findMinPrice(resources.getHotelId());
-        if (minPrice > resources.getRoomPrice()){
-            minPrice = resources.getRoomPrice();
-            hotelService.setMinPrice(resources.getHotelId(),minPrice);
+        QueryWrapper<Room> roomQueryWrapper = new QueryWrapper<>();
+        roomQueryWrapper.eq("hotel_id",resources.getHotelId());
+        List<Room> roomList = roomService.list(roomQueryWrapper);
+        if (roomList.size() == 0){
+            hotelService.setMinPrice(resources.getHotelId(),resources.getRoomPrice());
+        }else{
+            int minPrice = roomService.findMinPrice(resources.getHotelId());
+            if (minPrice > resources.getRoomPrice()){
+                minPrice = resources.getRoomPrice();
+                hotelService.setMinPrice(resources.getHotelId(),minPrice);
+            }
         }
         roomService.save(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);

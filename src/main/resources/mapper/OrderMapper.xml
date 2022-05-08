@@ -46,7 +46,8 @@
         where `order`.order_id = #{id}
     </update>
 
-    <insert id="saveOrder" parameterType="com.ctgu.bs_hotel.entity.Order">
+    <insert id="saveOrder" parameterType="com.ctgu.bs_hotel.entity.Order" useGeneratedKeys="true"
+            keyProperty="orderId">
         insert into `order`(open_id,start_of_date,end_of_date,order_price,hotel_id,room_id,order_user_name,order_user_telephone,order_user_ps,order_room_number,order_create_time,order_status)
         values(#{openId},#{startOfDate},#{endOfDate},#{orderPrice},#{hotelId},#{roomId},#{orderUserName},#{orderUserTelephone},#{orderUserPs},#{orderRoomNumber},#{orderCreateTime},#{orderStatus})
     </insert>
@@ -57,9 +58,27 @@
         where `order`.order_id = #{orderId}
     </select>
 
+    <select id="selectExistOrder" resultType="com.ctgu.bs_hotel.entity.Order">
+        select `order`.*
+        from `order`
+        where `order`.order_id = #{orderId}
+    </select>
+
+    <select id="selectOrderByIdDlx" resultType="com.ctgu.bs_hotel.entity.Order">
+        select *
+        from `order`
+        where `order`.order_id = #{orderId}
+    </select>
+
     <update id="toPayOrder">
         update `order`
         set `order`.order_status = 1,`order`.order_pay_time = #{param2}
+        where `order`.order_id = #{param1}
+    </update>
+
+    <update id="updateOrderStatusById">
+        update `order`
+        set `order`.order_status = 4
         where `order`.order_id = #{param1}
     </update>
 

@@ -6,6 +6,7 @@ import com.ctgu.bs_hotel.entity.Order;
 import com.ctgu.bs_hotel.entity.vo.UserCenterOrderVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -29,9 +30,15 @@ public interface OrderMapper extends BaseMapper<Order> {
 
     int cancelOrder(Long id);
 
-    boolean saveOrder(Order createOrder);
+    int saveOrder(Order createOrder);
 
     Order selectOrderById(int orderId);
 
     int toPayOrder(int orderId, Date date);
+
+    void updateOrderStatusById(int orderId);
+
+    Order selectOrderByIdDlx(int orderId);
+
+    Order selectExistOrder(int orderId);
 }

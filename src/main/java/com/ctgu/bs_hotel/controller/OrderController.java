@@ -2,11 +2,16 @@ package com.ctgu.bs_hotel.controller;
 
 import com.ctgu.bs_hotel.common.DateUtil;
 import com.ctgu.bs_hotel.common.GlobalResult;
+import com.ctgu.bs_hotel.common.RedisUtils;
+import com.ctgu.bs_hotel.common.WebSocket;
 import com.ctgu.bs_hotel.entity.vo.OrderMetaVo;
-import com.ctgu.bs_hotel.entity.vo.OrderVo;
 import com.ctgu.bs_hotel.entity.Order;
 import com.ctgu.bs_hotel.entity.vo.UserCenterOrderVo;
+import com.ctgu.bs_hotel.service.AdminService;
 import com.ctgu.bs_hotel.service.OrderService;
+import io.swagger.models.auth.In;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +21,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ClassName OrderController
@@ -28,7 +34,21 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
+    private RedisUtils redisUtils;
+
+    @Autowired
+    private AmqpTemplate rabbitTemplate;
+
+    @Autowired
+    private AdminService adminService;
+
+    @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private WebSocket webSocket;
+
+
 
     // todo
     @RequestMapping("/saveOrder")
@@ -46,12 +66,25 @@ public class OrderController {
         createOrder.setOrderRoomNumber(order.getOrderRoomNumber());
         createOrder.setOrderCreateTime(new Date());
         createOrder.setOrderStatus(0);
-        boolean create = orderService.saveOrder(createOrder);
-        if (create) {
+        int create = orderService.saveOrder(createOrder);
+        if (create != 0) {
+            redisUtils.set(String.valueOf(createOrder.getOrderId()),"waitToPay",900, TimeUnit.SECONDS);
+            rabbitTemplate.convertAndSend("ex.order", "order",createOrder.getOrderId());
             return GlobalResult.ok();
         }else{
             return GlobalResult.build(500,"订单创建失败",null);
         }
+    }
+
+    @RequestMapping("/getKeyExpireTime")
+    public GlobalResult getKeyExpireTime(@RequestParam("orderId") int orderId){
+        long expire = redisUtils.getExpire(Integer.toString(orderId));
+        if (expire != -1){
+            return GlobalResult.ok(expire);
+        }else {
+            return GlobalResult.build(500,"key过期",null);
+        }
+
     }
 
     @RequestMapping("/selectAllOrderByUserId")
@@ -91,10 +124,17 @@ public class OrderController {
 
     @RequestMapping("toPayOrder")
     public GlobalResult toPayOrder(@RequestParam("orderId") int orderId){
+        Order order = orderService.selectOrderById(orderId);
+        List<String> userNameList = new ArrayList<>();
         int n = orderService.toPayOrder(orderId,new Date());
         if (n == 0){
             return GlobalResult.build(500,"支付失败",null);
         }else{
+            userNameList = adminService.findNameByHotelId(Integer.toString(order.getHotelId()));
+            for (String s : userNameList) {
+                webSocket.sendOneMessage(s,"您有新的订单，请及时确认");
+            }
+            redisUtils.del(Integer.toString(orderId));
             return GlobalResult.ok();
         }
     }

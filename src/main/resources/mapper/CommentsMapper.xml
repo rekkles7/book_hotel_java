@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.bs_hotel.mapper.CommentsMapper">
+    <resultMap id="CommentImageBaseMap" type="com.ctgu.bs_hotel.entity.vo.CommentsVo">
+        <id column="comment_id" property="commentId" jdbcType="INTEGER" />
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+        <result column="avatar_url" property="avatarUrl" jdbcType="VARCHAR" />
+        <result column="start_of_date" property="startOfDate" jdbcType="DATE" />
+        <result column="create_time" property="commentCreateDate" jdbcType="DATE" />
+        <result column="room_name" property="roomName" jdbcType="VARCHAR" />
+        <result column="comment_content" property="commentContent" jdbcType="VARCHAR" />
+        <result column="reply_content" property="replyContent" jdbcType="VARCHAR" />
+        <collection property="imageUrls" ofType="com.ctgu.bs_hotel.entity.CommentImage">
+            <id column="comment_image_id" property="commentImageId" jdbcType="INTEGER" />
+            <result column="comment_id" property="commentId" jdbcType="VARCHAR" />
+            <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+        </collection>
+    </resultMap>
+    <insert id="createComment" parameterType="com.ctgu.bs_hotel.entity.Comments">
+        insert into `comments`(open_id,comment_content,hotel_id,order_id,create_time)
+        values(#{openId},#{commentContent},#{hotelId},#{orderId},#{createTime})
+        <selectKey keyProperty="commentId" order="AFTER" resultType="int">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="selectCommentsByHotelId" resultMap="CommentImageBaseMap">
+        select `comments`.comment_content,`comments`.reply_content,`comments`.create_time,
+               `order`.start_of_date,`room`.room_name,`user`.nick_name,`user`.avatar_url,`comments`.comment_id,
+               `comment_image`.image_url
+        from `comments`,`order`,`room`,`user`,`comment_image`
+        where `comments`.order_id = `order`.order_id and `order`.room_id = `room`.room_id and `comments`.open_id = `user`.open_id and `comment_image`.comment_id = `comments`.comment_id and `comments`.hotel_id = #{hotelId}
+    </select>
+
+    <select id="selectAdminCommentsByHotelId" resultType="com.ctgu.bs_hotel.entity.vo.AdminCommentsVo">
+        select `comments`.comment_content,`comments`.reply_content,`comments`.create_time,
+               `room`.room_name,`user`.nick_name,`user`.avatar_url,`comments`.comment_id
+        from `comments`,`order`,`room`,`user`
+        where `comments`.order_id = `order`.order_id and `order`.room_id = `room`.room_id and `comments`.open_id = `user`.open_id and `comments`.hotel_id = #{hotelId}
+    </select>
+
+    <update id="replyComment">
+        update `comments` set `comments`.reply_content = #{replyContent}
+        where `comments`.comment_id = #{commentId}
+    </update>
+</mapper>

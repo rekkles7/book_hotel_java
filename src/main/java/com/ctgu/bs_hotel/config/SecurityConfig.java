@@ -36,6 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/room/*").permitAll()
                 .antMatchers("/user/order/*").permitAll()
                 .antMatchers("/user/wx/*").permitAll()
+                .antMatchers("/user/comments/*").permitAll()
                 .antMatchers("/user/*").permitAll()
                 // 放行OPTIONS请求，放行了才能把status放到data里面
                 .antMatchers(HttpMethod.OPTIONS, "/*").permitAll()

@@ -1,5 +1,7 @@
 package com.ctgu.bs_hotel.common;
 
+import lombok.Data;
+
 /**
  * ClassName GlobalResult
  * Description 全局返回值

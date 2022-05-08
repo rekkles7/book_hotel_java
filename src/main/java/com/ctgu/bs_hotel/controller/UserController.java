@@ -39,34 +39,23 @@ public class UserController {
                                    @RequestParam(value = "signature", required = false) String signature,
                                    @RequestParam(value = "encrypteData", required = false) String encrypteData,
                                    @RequestParam(value = "iv", required = false) String iv) {
-        // 用户非敏感信息：rawData
-        // 签名：signature
         JSONObject rawDataJson = JSON.parseObject(rawData);
-        // 1.接收小程序发送的code
-        // 2.开发者服务器 登录凭证校验接口 appi + appsecret + code
         JSONObject SessionKeyOpenId = WechatUtil.getSessionKeyOrOpenId(code);
-        // 3.接收微信接口服务 获取返回的参数
         String openid = SessionKeyOpenId.getString("openid");
         String sessionKey = SessionKeyOpenId.getString("session_key");
-
-        // 4.校验签名 小程序发送的签名signature与服务器端生成的签名signature2 = sha1(rawData + sessionKey)
         String signature2 = DigestUtils.sha1Hex(rawData + sessionKey);
         if (!signature.equals(signature2)) {
             return GlobalResult.build(500, "签名校验失败", null);
         }
-        // 5.根据返回的User实体类，判断用户是否是新用户，是的话，将用户信息存到数据库；不是的话，更新最新登录时间
         User user = this.userService.getById(openid);
-        // uuid生成唯一key，用于维护微信小程序用户与服务端的会话
         String skey = UUID.randomUUID().toString();
         if (user == null) {
-            // 用户信息入库
             String nickName = rawDataJson.getString("nickName");
             String avatarUrl = rawDataJson.getString("avatarUrl");
             String gender = rawDataJson.getString("gender");
             String city = rawDataJson.getString("city");
             String country = rawDataJson.getString("country");
             String province = rawDataJson.getString("province");
-
             user = new User();
             user.setOpenId(openid);
             user.setSkey(skey);

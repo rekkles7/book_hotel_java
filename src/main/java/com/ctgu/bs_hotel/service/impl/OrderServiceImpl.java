@@ -75,7 +75,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public boolean saveOrder(Order createOrder) {
+    public int saveOrder(Order createOrder) {
         return orderMapper.saveOrder(createOrder);
     }
 
@@ -87,6 +87,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public int toPayOrder(int orderId, Date date) {
         return orderMapper.toPayOrder(orderId,date);
+    }
+
+    @Override
+    public void updateOrderStatusById(int orderId) {
+        orderMapper.updateOrderStatusById(orderId);
+    }
+
+    @Override
+    public Order selectOrderByIdDlx(int orderId) {
+        return orderMapper.selectOrderByIdDlx(orderId);
+    }
+
+    @Override
+    public Order selectExistOrder(int orderId) {
+        return orderMapper.selectExistOrder(orderId);
     }
 
 }

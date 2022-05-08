@@ -22,6 +22,8 @@ public class AdminDto extends BaseDTO implements Serializable {
 
     private String nickName;
 
+    private int hotelId;
+
     private String email;
 
     private String phone;

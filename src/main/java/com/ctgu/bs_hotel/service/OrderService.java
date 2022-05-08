@@ -27,9 +27,15 @@ public interface OrderService extends IService<Order> {
 
     int cancelOrder(Long id);
 
-    boolean saveOrder(Order createOrder);
+    int saveOrder(Order createOrder);
 
     Order selectOrderById(int orderId);
 
     int toPayOrder(int orderId, Date date);
+
+    void updateOrderStatusById(int orderId);
+
+    Order selectOrderByIdDlx(int orderId);
+
+    Order selectExistOrder(int orderId);
 }

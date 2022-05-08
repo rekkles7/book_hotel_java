@@ -1,11 +1,9 @@
 package com.ctgu.bs_hotel.controller.admin;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ctgu.bs_hotel.common.GlobalResult;
 import com.ctgu.bs_hotel.entity.Admin;
 import com.ctgu.bs_hotel.entity.Order;
 import com.ctgu.bs_hotel.entity.vo.OrderVo;
-import com.ctgu.bs_hotel.mapper.OrderMapper;
 import com.ctgu.bs_hotel.service.AdminService;
 import com.ctgu.bs_hotel.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * ClassName AdminOrderController
@@ -36,6 +33,10 @@ public class AdminOrderController {
         Admin admin = adminService.selectHotelIdByAdminId(adminId);
         List<OrderVo> orderList = new ArrayList<>();
         orderList = orderService.selectAllOrderByHotelId(admin.getHotelId());
+        for (OrderVo orderVo : orderList) {
+            orderVo.setStartOfDate(orderVo.getStartOfDate().substring(0,10));
+            orderVo.setEndOfDate(orderVo.getEndOfDate().substring(0,10));
+        }
         if (orderList == null) {
             return GlobalResult.build(500,"暂时没有订单数据",null);
         }else{

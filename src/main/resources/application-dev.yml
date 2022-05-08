@@ -13,6 +13,11 @@ spring:
     host: 127.0.0.1
     port: 6379
     connect-timeout: 5000
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 # 整合mybatis
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.bs_hotel.mapper.CheckInMapper">
+    <select id="selectCheckInByHotelId" resultType="com.ctgu.bs_hotel.entity.vo.CheckInVo">
+        select `check_in`.check_id,`check_in`.check_username,`check_in`.check_userphone,
+               `check_in`.check_id_card,`check_in`.check_room_no,`check_in`.order_id,`check_in`.hotel_id,
+               `order`.start_of_date,`order`.end_of_date
+        from `check_in`,`order`
+        where `check_in`.order_id = `order`.order_id and `check_in`.hotel_id = #{hotelId}
+    </select>
+</mapper>
