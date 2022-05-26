@@ -25,8 +25,8 @@
     </insert>
 
     <select id="selectCommentsByHotelId" resultMap="CommentImageBaseMap">
-        select `comments`.comment_content,`comments`.reply_content,`comments`.create_time,
-               `order`.start_of_date,`room`.room_name,`user`.nick_name,`user`.avatar_url,`comments`.comment_id,
+        select `comments`.comment_id,`user`.nick_name,`user`.avatar_url,
+               `order`.start_of_date,`comments`.create_time,`room`.room_name,`comments`.comment_content,`comments`.reply_content,
                `comment_image`.image_url
         from `comments`,`order`,`room`,`user`,`comment_image`
         where `comments`.order_id = `order`.order_id and `order`.room_id = `room`.room_id and `comments`.open_id = `user`.open_id and `comment_image`.comment_id = `comments`.comment_id and `comments`.hotel_id = #{hotelId}

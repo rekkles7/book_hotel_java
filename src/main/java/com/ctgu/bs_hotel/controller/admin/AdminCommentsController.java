@@ -29,7 +29,8 @@ public class AdminCommentsController {
     @RequestMapping("/replyComment")
     public GlobalResult replyComment(@RequestParam("commentId")int commentId,@RequestParam("replyContent")String replyContent){
         Comments comments = commentsService.getById(commentId);
-        if (!comments.getReplyContent().equals("")){
+        System.out.println(comments.toString());
+        if (!(comments.getReplyContent() == null)){
             return GlobalResult.errorMsg("已经回复过该评论，无需继续回复！");
         }else{
             commentsService.replyComment(commentId,replyContent);

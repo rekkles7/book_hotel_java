@@ -46,6 +46,9 @@ public class RoomController {
         if (roomList == null) {
             return GlobalResult.build(500,"暂时没有房型数据",null);
         }else {
+            for (Room room : roomList) {
+                System.out.println(room.toString());
+            }
             return GlobalResult.ok(roomList);
         }
     }

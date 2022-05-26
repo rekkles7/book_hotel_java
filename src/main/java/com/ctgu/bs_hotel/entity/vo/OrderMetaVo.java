@@ -30,4 +30,6 @@ public class OrderMetaVo {
     private String orderUserPs;
 
     private int orderRoomNumber;
+
+    private int version;
 }

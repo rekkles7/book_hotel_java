@@ -1,6 +1,8 @@
 package com.ctgu.bs_hotel.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ctgu.bs_hotel.entity.vo.OrderVo;
 import com.ctgu.bs_hotel.entity.Order;
 import com.ctgu.bs_hotel.entity.vo.UserCenterOrderVo;
@@ -41,4 +43,8 @@ public interface OrderMapper extends BaseMapper<Order> {
     Order selectOrderByIdDlx(int orderId);
 
     Order selectExistOrder(int orderId);
+
+    IPage<OrderVo> selectPageVo(Page<OrderVo> page, @Param("hotelId") Long hotelId,@Param("orderStatus") Integer orderStatus, @Param("orderUserName") String orderUserName);
+
+    void updateOrder(@Param("orderId") int orderId,@Param("orderUserName") String orderUserName,@Param("orderUserTelephone") String orderUserTelephone,@Param("orderUserPs") String orderUserPs);
 }

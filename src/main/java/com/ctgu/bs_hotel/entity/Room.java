@@ -1,9 +1,6 @@
 package com.ctgu.bs_hotel.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 /**
@@ -38,5 +35,8 @@ public class Room {
 
     @TableField("hotel_id")
     private int hotelId;
+
+    @Version
+    private int version;
 
 }

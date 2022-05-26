@@ -4,11 +4,13 @@ import com.ctgu.bs_hotel.common.DateUtil;
 import com.ctgu.bs_hotel.common.GlobalResult;
 import com.ctgu.bs_hotel.common.RedisUtils;
 import com.ctgu.bs_hotel.common.WebSocket;
+import com.ctgu.bs_hotel.entity.Room;
 import com.ctgu.bs_hotel.entity.vo.OrderMetaVo;
 import com.ctgu.bs_hotel.entity.Order;
 import com.ctgu.bs_hotel.entity.vo.UserCenterOrderVo;
 import com.ctgu.bs_hotel.service.AdminService;
 import com.ctgu.bs_hotel.service.OrderService;
+import com.ctgu.bs_hotel.service.RoomService;
 import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -46,6 +48,9 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
+    private RoomService roomService;
+
+    @Autowired
     private WebSocket webSocket;
 
 
@@ -61,16 +66,24 @@ public class OrderController {
         createOrder.setEndOfDate(DateUtil.string2Date(order.getEndOfDate()+" 12:00:00"));
         createOrder.setHotelId(Integer.parseInt(order.getHotelId()));
         createOrder.setRoomId(Integer.parseInt(order.getRoomId()));
-        createOrder.setOrderPrice(order.getOrderPrice());
+        createOrder.setOrderPrice(order.getOrderPrice()*order.getOrderRoomNumber());
         createOrder.setOrderUserPs(order.getOrderUserPs());
         createOrder.setOrderRoomNumber(order.getOrderRoomNumber());
         createOrder.setOrderCreateTime(new Date());
         createOrder.setOrderStatus(0);
-        int create = orderService.saveOrder(createOrder);
-        if (create != 0) {
-            redisUtils.set(String.valueOf(createOrder.getOrderId()),"waitToPay",900, TimeUnit.SECONDS);
-            rabbitTemplate.convertAndSend("ex.order", "order",createOrder.getOrderId());
-            return GlobalResult.ok();
+        Room room = roomService.getById(Integer.parseInt(order.getRoomId()));
+        int newVersion = room.getVersion();
+        System.out.println("newVersion="+newVersion+"oldVersion"+order.getVersion());
+        if (newVersion == order.getVersion()){
+            int create = orderService.saveOrder(createOrder);
+            roomService.updateById(room);
+            if (create != 0) {
+                redisUtils.set(String.valueOf(createOrder.getOrderId()),"waitToPay",900, TimeUnit.SECONDS);
+                rabbitTemplate.convertAndSend("ex.order", "order",createOrder.getOrderId());
+                return GlobalResult.ok();
+            }else{
+                return GlobalResult.build(500,"订单创建失败",null);
+            }
         }else{
             return GlobalResult.build(500,"订单创建失败",null);
         }
@@ -131,6 +144,7 @@ public class OrderController {
             return GlobalResult.build(500,"支付失败",null);
         }else{
             userNameList = adminService.findNameByHotelId(Integer.toString(order.getHotelId()));
+            System.out.println(userNameList.toString());
             for (String s : userNameList) {
                 webSocket.sendOneMessage(s,"您有新的订单，请及时确认");
             }
@@ -138,5 +152,23 @@ public class OrderController {
             return GlobalResult.ok();
         }
     }
+
+    @RequestMapping("updateOrder")
+    public GlobalResult updateOrder(@RequestParam("orderId") int orderId,
+                                    @RequestParam("orderUserName") String orderUserName,
+                                    @RequestParam("orderUserTelephone") String orderUserTelephone,
+                                    @RequestParam("orderUserPs") String orderUserPs){
+        orderService.updateOrder(orderId,orderUserName,orderUserTelephone,orderUserPs);
+        return GlobalResult.ok();
+    }
+
+    @RequestMapping("calculateServiceCharge")
+    public GlobalResult calculateServiceCharge(@RequestParam("orderId") int orderId){
+        double rate = orderService.calculateServiceCharge(orderId);
+        return GlobalResult.ok(rate);
+    }
+//    @RequestMapping("cancelO")
+
+
 
 }

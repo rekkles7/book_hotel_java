@@ -62,4 +62,5 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
     public int findMinPrice(int hotelId) {
         return roomMapper.findMinPrice(hotelId);
     }
+
 }

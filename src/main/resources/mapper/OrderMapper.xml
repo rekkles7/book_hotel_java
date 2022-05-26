@@ -28,10 +28,30 @@
         where `order`.room_id = `room`.room_id and `order`.hotel_id = #{hotelId}
     </select>
 
+    <select id="selectPageVo" resultType="com.ctgu.bs_hotel.entity.vo.OrderVo">
+        select `order`.order_id,`order`.order_user_name,`order`.order_user_telephone,`order`.start_of_date,`order`.end_of_date,
+               `order`.order_price,`order`.order_user_ps,`room`.room_name,`order`.order_room_number,
+               `order`.order_create_time,`order`.order_pay_time,`order`.order_status
+        from `order`,`room`
+        where `order`.room_id = `room`.room_id and `order`.hotel_id = #{hotelId}
+        <if test="orderStatus != null">
+            AND `order`.order_status = #{orderStatus}
+        </if>
+        <if test="orderUserName != null">
+            AND `order`.order_user_name like concat('%',#{orderUserName},'%')
+        </if>
+    </select>
+
     <update id="updateOrderNameAndTelphone">
         update `order`
         set `order`.order_user_name = #{param2},`order`.order_user_telephone = #{param3},`order`.order_status = #{param4}
         where `order`.order_id = #{param1}
+    </update>
+
+    <update id="updateOrder">
+        update `order`
+        set `order`.order_user_name = #{orderUserName},`order`.order_user_telephone = #{orderUserTelephone},`order`.order_user_ps = #{orderUserPs}
+        where `order`.order_id = #{orderId}
     </update>
 
     <update id="confirmOrder">
@@ -53,7 +73,7 @@
     </insert>
 
     <select id="selectOrderById" resultType="com.ctgu.bs_hotel.entity.Order">
-        select `order`.order_user_name,`order`.order_user_telephone,`order`.order_create_time,`order`.order_pay_time
+        select `order`.order_user_name,`order`.order_user_telephone,`order`.order_create_time,`order`.order_pay_time,`order`.hotel_id
         from `order`
         where `order`.order_id = #{orderId}
     </select>

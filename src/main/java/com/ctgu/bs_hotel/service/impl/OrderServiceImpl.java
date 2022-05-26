@@ -1,5 +1,8 @@
 package com.ctgu.bs_hotel.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ctgu.bs_hotel.common.DateUtil;
 import com.ctgu.bs_hotel.entity.vo.OrderVo;
@@ -7,9 +10,11 @@ import com.ctgu.bs_hotel.entity.Order;
 import com.ctgu.bs_hotel.entity.vo.UserCenterOrderVo;
 import com.ctgu.bs_hotel.mapper.OrderMapper;
 import com.ctgu.bs_hotel.service.OrderService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -102,6 +107,40 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Order selectExistOrder(int orderId) {
         return orderMapper.selectExistOrder(orderId);
+    }
+
+    @Override
+    public IPage<OrderVo> selectPageVo(Page<OrderVo> page, Long hotelId, Integer orderStatus, String orderUserName) {
+        return orderMapper.selectPageVo(page,hotelId,orderStatus,orderUserName);
+    }
+
+    @Override
+    public void updateOrder(int orderId, String orderUserName, String orderUserTelephone, String orderUserPs) {
+        orderMapper.updateOrder(orderId,orderUserName,orderUserTelephone,orderUserPs);
+    }
+
+    @Override
+    public double calculateServiceCharge(int orderId) {
+        Order order = orderMapper.selectExistOrder(orderId);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String sod = sdf.format(order.getStartOfDate());
+        StringBuilder startOfDate = new StringBuilder(sod);
+        startOfDate = startOfDate.replace(11,13,"18");
+        sod = startOfDate.toString();
+        String nd = sdf.format(new Date());
+        String today = sod.substring(0,10);
+        today = today + " 00:00:00";
+        double rate = 0;
+        System.out.println(sod);
+        System.out.println(nd);
+        System.out.println(today);
+        if (nd.compareTo(today) < 0){
+            rate = 0;
+        }
+        if(nd.compareTo(today) > 0 && nd.compareTo(sod) < 0){
+            rate = 0.1;
+        }
+        return rate;
     }
 
 }

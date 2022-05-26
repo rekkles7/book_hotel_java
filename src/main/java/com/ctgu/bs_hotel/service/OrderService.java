@@ -1,5 +1,8 @@
 package com.ctgu.bs_hotel.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ctgu.bs_hotel.entity.vo.OrderVo;
 import com.ctgu.bs_hotel.entity.Order;
@@ -38,4 +41,10 @@ public interface OrderService extends IService<Order> {
     Order selectOrderByIdDlx(int orderId);
 
     Order selectExistOrder(int orderId);
+
+    IPage<OrderVo> selectPageVo(Page<OrderVo> page, Long hotelId, Integer orderStatus, String orderUserName);
+
+    void updateOrder(int orderId, String orderUserName, String orderUserTelephone, String orderUserPs);
+
+    double calculateServiceCharge(int orderId);
 }

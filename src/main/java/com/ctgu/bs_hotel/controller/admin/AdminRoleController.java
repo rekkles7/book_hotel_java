@@ -27,6 +27,7 @@ public class AdminRoleController {
     @ApiOperation("返回全部的角色")
     @GetMapping(value = "/all")
     public ResponseEntity<Object> queryAllRole(){
+
         return new ResponseEntity<>(roleService.queryAll(), HttpStatus.OK);
     }
 

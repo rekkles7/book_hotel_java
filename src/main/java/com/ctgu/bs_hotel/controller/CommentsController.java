@@ -73,22 +73,30 @@ public class CommentsController {
      */
     @PostMapping("/saveComment")
     public GlobalResult saveComment(CommentVo commentVo){
-        QueryWrapper<Hotel> hotelQueryWrapper = new QueryWrapper<Hotel>();
-        hotelQueryWrapper.eq("hotel_name",commentVo.getHotelName());
-        Hotel hotel = hotelService.getOne(hotelQueryWrapper);
-        int hotelId = hotel.getHotelId();
-        //先创建评论,得到评论的ID
-        Comments comments = new Comments(commentVo.getOpenId(),commentVo.getText(),hotelId,commentVo.getOrderId(),new Date());
-        int create= commentsService.createComment(comments);
-        if (create != 0){
-            // 创建成功
-            List<String> urlList = commentVo.getUrls();
-            for (String s : urlList) {
-                commentImageService.save(new CommentImage(comments.getCommentId(),s));
-            }
-            return GlobalResult.ok();
+        int orderId = commentVo.getOrderId();
+        QueryWrapper<Comments> commentsQueryWrapper = new QueryWrapper<>();
+        commentsQueryWrapper.eq("order_id",orderId);
+        Comments exist = commentsService.getOne(commentsQueryWrapper);
+        if (exist!=null){
+            return GlobalResult.errorMsg("单个订单只能评论一次");
         }else{
-            return GlobalResult.errorMsg("评论失败");
+            QueryWrapper<Hotel> hotelQueryWrapper = new QueryWrapper<Hotel>();
+            hotelQueryWrapper.eq("hotel_name",commentVo.getHotelName());
+            Hotel hotel = hotelService.getOne(hotelQueryWrapper);
+            int hotelId = hotel.getHotelId();
+            //先创建评论,得到评论的ID
+            Comments comments = new Comments(commentVo.getOpenId(),commentVo.getText(),hotelId,commentVo.getOrderId(),new Date());
+            int create= commentsService.createComment(comments);
+            if (create != 0){
+                // 创建成功
+                List<String> urlList = commentVo.getUrls();
+                for (String s : urlList) {
+                    commentImageService.save(new CommentImage(comments.getCommentId(),s));
+                }
+                return GlobalResult.ok();
+            }else{
+                return GlobalResult.errorMsg("评论失败");
+            }
         }
     }
 
